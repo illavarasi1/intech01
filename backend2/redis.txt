@@ -1,0 +1,76 @@
+import express from "express";
+import multer from "multer";
+import { addItemJob } from "../queue.js";
+
+const router = express.Router();
+
+// multer setup
+const upload = multer({ dest: "uploads/" });
+
+router.post("/api/items/add", upload.single("image"), async (req, res) => {
+  try {
+    const itemData = {
+      title: req.body.title,
+      image: req.file.path, // ✅ store file path
+    };
+
+    await addItemJob(itemData); // send to queue
+
+    res.json({ message: "Added to queue" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+export default router;
+
+import { Queue, Worker } from "bullmq";
+import Redis from "ioredis";
+import axios from "axios";
+import FormData from "form-data";
+import fs from "fs";
+
+const connection = new Redis();
+
+// create queue
+export const itemQueue = new Queue("itemQueue", { connection });
+
+// add job
+export const addItemJob = async (itemData) => {
+  await itemQueue.add("addItem", itemData, {
+    attempts: 10,
+    backoff: {
+      type: "exponential",
+      delay: 5000,
+    },
+    removeOnComplete: true,
+  });
+};
+
+// worker (this sends to backend 2)
+new Worker(
+  "itemQueue",
+  async (job) => {
+    try {
+      console.log("Trying to send to backend2...");
+
+      const formData = new FormData();
+      formData.append("title", job.data.title);
+      formData.append("image", fs.createReadStream(job.data.image));
+
+      await axios.post("http://localhost:3000/api/items/add", formData, {
+        headers: formData.getHeaders(),
+      });
+
+      console.log("✅ Sent successfully!");
+    } catch (err) {
+      console.log("❌ Backend2 down, retrying...");
+      throw err; // important for retry
+    }
+  },
+  { connection }
+);
+router.post("/api/items/add", upload.single("image"), (req, res) => {
+  console.log("Received in backend2:", req.body.title);
+  res.json({ message: "Saved in backend 2" });
+});
