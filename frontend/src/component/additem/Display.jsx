@@ -7,7 +7,7 @@ import "./display.css";
 function Display() {
   const [items, setItems] = useState([]);
   const navigate = useNavigate();
-  const socket = io("http://localhost:5000");
+  const socket = io("http://localhost:5000/add-item");
 
   useEffect(() => {
     const fetchItems = async () => {
