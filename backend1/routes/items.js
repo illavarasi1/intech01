@@ -22,7 +22,7 @@ router.post("/add-item", verifyToken, upload.single("image"), async (req, res) =
      image: newPath,
    };
 
-   await addItemJob(itemData);
+   const job=await addItemJob(itemData);
    res.json({
      message: "Added to queue",
      jobId: job.id, 

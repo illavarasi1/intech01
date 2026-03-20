@@ -4,6 +4,7 @@ import axios from "axios";
 import FormData from "form-data";
 import fs from "fs";
 import { io } from "./server.js";
+import Item from "../backend2/models/items.js";
 // import client from "./redis.js"
 
 const connection = new Redis({
@@ -16,7 +17,7 @@ enableReadyCheck: false,
 export const itemQueue = new Queue("itemQueue", { connection });
 
 export const addItemJob = async (itemData) => {
-  await itemQueue.add("addItem", itemData, {
+ const job= await itemQueue.add("addItem", itemData, {
     attempts: 50,
     backoff: {
       type: "exponential",
@@ -24,7 +25,8 @@ export const addItemJob = async (itemData) => {
     },
     removeOnComplete: true,
     removeOnFail: false,
-  });
+ });
+    console.log(`Job ${job.id} added to queue`);
    return job;
 };
 
@@ -42,9 +44,10 @@ new Worker(
         headers: formData.getHeaders(),
         timeout: 5000,
       });
-      io.emit("itemAdded", {
-        title: job.data.title,
-      });
+    io.emit("itemAdded", {
+      title: job.data.title,
+      imageUrl: `/uploads/files/${path.basename(job.data.image)}`,
+    });
       await connection.set(`job:${job.id}`, "completed");
 
       console.log("Sent to backend2");

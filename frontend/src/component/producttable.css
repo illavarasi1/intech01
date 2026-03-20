@@ -1,0 +1,37 @@
+/* ProductTable.css */
+.product-table-container {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+.product-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.product-table-container th,
+.product-table-container td {
+    text-align: left;
+    padding: 12px 16px;
+}
+
+.product-table-container th {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #666;
+}
+
+.product-table-container tbody tr:hover {
+    background-color: #f2f4f6;
+}
+
+.product-table-container .category-label {
+    font-size: 10px;
+    padding: 2px 6px;
+    background-color: #f2f4f6;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-radius: 4px;
+}

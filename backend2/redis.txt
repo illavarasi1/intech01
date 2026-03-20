@@ -74,3 +74,80 @@ router.post("/api/items/add", upload.single("image"), (req, res) => {
   console.log("Received in backend2:", req.body.title);
   res.json({ message: "Saved in backend 2" });
 });
+
+app.jsx
+import React, { useState } from "react";
+import Header from "./Header";
+import Sidebar from "./Sidebar";
+import AddProduct from "./AddProduct"; // Your form component
+
+const App = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  return (
+    <div className="app">
+      <Header toggleSidebar={toggleSidebar} />
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+
+      {/* Main Content */}
+      <main
+        className={`transition-all duration-300 pt-24 px-6 ${
+          isSidebarOpen ? "md:ml-64" : "md:ml-0"
+        }`}
+      >
+        <AddProduct />
+      </main>
+    </div>
+  );
+};
+
+export default App;
+
+
+function App() {
+  //  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  //  const toggleSidebar = () => {
+  //    setIsSidebarOpen((prev) => !prev);
+  //  };
+  return (
+    <>
+      <Header />
+      <div className="main-container">
+        <Sidebar />
+        <AddProduct />
+      </div>
+    </>
+  );
+
+  .root{
+
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --accent-color: #6366f1;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --bg-body: #f8fafc;
+    --bg-card: #ffffff;
+    --border-color: #e2e8f0;
+    --input-bg: #f1f5f9;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-body);
+}
+.main-container {
+    display: flex;
+    height: calc(100vh - 56px);
+}

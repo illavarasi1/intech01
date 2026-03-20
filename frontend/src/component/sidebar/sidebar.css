@@ -1,0 +1,25 @@
+.sidebar {
+    width: 240px;
+    background: #fff;
+    border-right: 1px solid var(--border-color);
+    padding-top: 24px;
+}
+
+.sidebar-link {
+    display: block;
+    padding: 12px 24px;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-link:hover {
+    background: #f1f5f9;
+    color: var(--primary-color);
+}
+
+.sidebar-link.active {
+    background: #eef2ff;
+    color: var(--primary-color);
+    border-left-color: var(--primary-color);
+}

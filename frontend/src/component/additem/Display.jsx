@@ -7,32 +7,51 @@ import "./display.css";
 function Display() {
   const [items, setItems] = useState([]);
   const navigate = useNavigate();
-  const socket = io("http://localhost:5000/add-item");
+  const socket = io("http://localhost:5000");
+
+  const fetchItemsWithRetry = async () => {
+    try {
+      const data = await getAllItems();
+      setItems(data);
+    } catch (error) {
+      console.error("Backend2 is down, retrying in 5s...");
+      setTimeout(fetchItemsWithRetry, 5000); 
+    }
+  };
 
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const data = await getAllItems();
-        setItems(data);
-      } catch (error) {
-        console.error("Failed to fetch items:", error);
-      }
-    };
-
-    fetchItems();
+    fetchItemsWithRetry();
     socket.on("itemAdded", (newItem) => {
-      console.log("🔥 New item received:", newItem);
-
+      console.log("🔥 New item received via socket:", newItem);
       setItems((prev) => [newItem, ...prev]);
     });
 
-    return () => socket.off("itemAdded");
+    return () => socket.disconnect();
   }, []);
+  // useEffect(() => {
+  //   const fetchItems = async () => {
+  //     try {
+  //       const data = await getAllItems();
+  //       setItems(data);
+  //     } catch (error) {
+  //       console.error("Failed to fetch items:", error);
+  //     }
+  //   };
 
- const fetchItems = async () => {
-   const data = await getAllItems();
-   setItems(data);
- };
+  //   fetchItems();
+  //   socket.on("itemAdded", (newItem) => {
+  //     console.log("🔥 New item received:", newItem);
+
+  //     setItems((prev) => [newItem, ...prev]);
+  //   });
+
+  //   return () => socket.disconnect();
+  // }, []);
+
+  // const fetchItems = async () => {
+  //   const data = await getAllItems();
+  //   setItems(data);
+  // };
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");

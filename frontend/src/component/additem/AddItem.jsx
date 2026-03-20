@@ -16,7 +16,13 @@ function AddItem() {
       setLoading(true);
       await addItem(title, image);
       setMessage("Item is being processed. It will appear shortly...");
-
+      // Optional: add temporary item in frontend (optimistic UI)
+      // const tempItem = {
+      //   _id: "temp-" + Date.now(),
+      //   title,
+      //   imageUrl: URL.createObjectURL(image),
+      // };
+      // setItems((prev) => [tempItem, ...prev]);
       setTimeout(() => {
         navigate("/display");
       }, 1500);
